@@ -72,9 +72,6 @@ typedef char bool;
 #endif
 
 #ifdef _WIN32
-#if defined(HAVE__CHMOD)
-#define chmod		_chmod
-#endif
 #if defined(HAVE__CLOSE)
 #define close		_close
 #endif
@@ -103,18 +100,6 @@ typedef char bool;
 #endif
 #if !defined(HAVE__SETMODE) && defined(HAVE_SETMODE)
 #define _setmode	setmode
-#endif
-#if !defined(HAVE_STRTOLL) && defined(HAVE__STRTOI64)
-#define strtoll		_strtoi64
-#endif
-#if !defined(HAVE_STRTOULL) && defined(HAVE__STRTOUI64)
-#define strtoull	_strtoui64
-#endif
-#if defined(HAVE__UMASK)
-#define umask	_umask
-#endif
-#if defined(HAVE__UNLINK)
-#define unlink	_unlink
 #endif
 #endif
 

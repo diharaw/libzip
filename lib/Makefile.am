@@ -1,40 +1,31 @@
-# for 'make dist'
-SUBDIRS=	gladman-fcrypt
-
 AM_CFLAGS=	@CFLAG_VISIBILITY@
 libincludedir = ${libdir}/@PACKAGE@/include
 
 lib_LTLIBRARIES = libzip.la
-noinst_HEADERS = zipint.h gladman-fcrypt.h
+noinst_HEADERS = zipint.h
 include_HEADERS = zip.h
 nodist_libinclude_HEADERS = zipconf.h
 
 # also update CMakeLists.txt when changing version
-libzip_la_LDFLAGS=-no-undefined -version-info 5:0:0
-libzip_la_CPPFLAGS=-I$(srcdir)/gladman-fcrypt
+libzip_la_LDFLAGS=-no-undefined -version-info 4:0:0
 libzip_la_LIBADD=@LTLIBOBJS@
 
 if WIN32_HOST
-OS_SOURCES=\
-	zip_random_win32.c \
+IO_SOURCES=\
 	zip_source_win32a.c \
 	zip_source_win32handle.c \
 	zip_source_win32utf8.c \
 	zip_source_win32w.c
 else
-OS_SOURCES=\
-	zip_random_unix.c \
+IO_SOURCES=\
 	zip_source_file.c
 endif
 
 libzip_la_SOURCES=\
-	${OS_SOURCES} \
-	gladman-fcrypt.c \
+	${IO_SOURCES} \
 	zip_add.c \
 	zip_add_dir.c \
 	zip_add_entry.c \
-	zip_algorithm_bzip2.c \
-	zip_algorithm_deflate.c \
 	zip_buffer.c \
 	zip_close.c \
 	zip_delete.c \
@@ -62,7 +53,6 @@ libzip_la_SOURCES=\
 	zip_file_rename.c \
 	zip_file_replace.c \
 	zip_file_set_comment.c \
-	zip_file_set_encryption.c \
 	zip_file_set_external_attributes.c \
 	zip_file_set_mtime.c \
 	zip_file_strerror.c \
@@ -72,10 +62,9 @@ libzip_la_SOURCES=\
 	zip_fopen_index.c \
 	zip_fopen_index_encrypted.c \
 	zip_fread.c \
-	zip_fseek.c \
-	zip_ftell.c \
 	zip_get_archive_comment.c \
 	zip_get_archive_flag.c \
+	zip_get_compression_implementation.c \
 	zip_get_encryption_implementation.c \
 	zip_get_file_comment.c \
 	zip_get_num_entries.c \
@@ -87,7 +76,6 @@ libzip_la_SOURCES=\
 	zip_name_locate.c \
 	zip_new.c \
 	zip_open.c \
-	zip_progress.c \
 	zip_rename.c \
 	zip_replace.c \
 	zip_set_archive_comment.c \
@@ -101,13 +89,12 @@ libzip_la_SOURCES=\
 	zip_source_call.c \
 	zip_source_close.c \
 	zip_source_commit_write.c \
-	zip_source_compress.c \
 	zip_source_crc.c \
+	zip_source_deflate.c \
 	zip_source_error.c \
 	zip_source_filep.c \
 	zip_source_free.c \
 	zip_source_function.c \
-	zip_source_get_compression_flags.c \
 	zip_source_is_deleted.c \
 	zip_source_layered.c \
 	zip_source_open.c \
@@ -122,8 +109,6 @@ libzip_la_SOURCES=\
 	zip_source_tell.c \
 	zip_source_tell_write.c \
 	zip_source_window.c \
-	zip_source_winzip_aes_decode.c \
-	zip_source_winzip_aes_encode.c \
 	zip_source_write.c \
 	zip_source_zip.c \
 	zip_source_zip_new.c \

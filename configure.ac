@@ -1,5 +1,5 @@
 AC_PREREQ([2.60])
-AC_INIT([libzip],[1.2.0a],[libzip@nih.at])
+AC_INIT([libzip],[1.1.3],[libzip@nih.at])
 AC_CONFIG_SRCDIR([lib/zip_add.c])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIR([m4])
@@ -19,7 +19,6 @@ AC_SUBST(PKG_CONFIG_RPATH)
 AC_PROG_CC
 AC_SYS_LARGEFILE
 AM_PROG_CC_C_O
-AC_C_BIGENDIAN
 
 AC_ARG_WITH(zlib,
     [  --with-zlib=PREFIX  specify prefix for ZLIB library],,
@@ -49,38 +48,12 @@ then
     AC_MSG_ERROR([ZLIB version too old, please install at least v1.1.2])
 fi
 
-AC_ARG_WITH(bzip2,
-    [  --with-bzip2=PREFIX  specify prefix for bzip2 library],,
-    with_bzip2=yes)
-
-if test "$with_bzip2" != "yes"
-then
-    if test -f "$with_bzip2"/bzlib.h
-    then
-	# PREFIX is to uninstalled version in distribution directory
-	CFLAGS="$CFLAGS -I$with_bzip2"
-	LDFLAGS="$LDFLAGS -L$with_bzip2"
-    else if test -f "$with_bzip2"/include/bzlib.h
-    then
-	# PREFIX is installation prefix
-	CFLAGS="$CFLAGS -I$with_bzip2/include"
-	LDFLAGS="$LDFLAGS -L$with_bzip2/lib"
-    fi
-    fi
-fi
-AC_CHECK_LIB(bz2, main)
-
 AC_EXEEXT
 
 LT_INIT
 
-AC_CHECK_FUNCS([_chmod _close _dup _fdopen _fileno _open _setmode _snprintf _strdup _stricmp _strtoi64 _strtoui64 _umask _unlink explicit_bzero explicit_memset fileno fseeko ftello getopt getprogname open setmode snprintf strcasecmp strdup stricmp strtoll strtoull])
+AC_CHECK_FUNCS([_close _dup _fdopen _fileno _open _setmode _snprintf _strdup _stricmp fileno fseeko ftello getopt getprogname open setmode snprintf strcasecmp strdup stricmp])
 AC_CHECK_FUNCS([mkstemp], [], [AC_LIBOBJ(mkstemp)])
-
-dnl assume dlsym in libc, but check in libdl
-DLSYM_LIB=
-AC_CHECK_LIB([dl], [dlsym], [DLSYM_LIB="-ldl"])
-AC_SUBST([DLSYM_LIB])
 
 AC_CACHE_CHECK([if libc defines __progname], ac_cv_libc_defines___progname,
 	       [ AC_LINK_IFELSE([AC_LANG_PROGRAM([[]],
@@ -150,7 +123,6 @@ AC_CONFIG_FILES([Makefile
 		 examples/Makefile
 		 man/Makefile
 		 lib/Makefile
-		 lib/gladman-fcrypt/Makefile
 		 regress/Makefile
 		 src/Makefile])
 AC_OUTPUT

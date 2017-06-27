@@ -1,5 +1,13 @@
 # API Plans
 
+## Encryption
+
+````c
+struct zip *zip_open_encrypted(const char *path, int flags, const char *password, int *errorp);
+int zip_set_encryption(struct zip *archive, zip_uint64_t idx, zip_uint16_t method, const char *password);
+void zip_set_archive_encryption(struct zip *archive, zip_uint16_t method, const char *password);
+````
+
 ## Prefixes
 
 For example for adding extractors for self-extracting zip archives.
@@ -8,11 +16,14 @@ zip_set_archive_prefix(struct zip *za, const zip_uint8_t *data, zip_uint64_t len
 const zip_uint8_t *zip_get_archive_prefix(struct zip *za, zip_uint64_t *lengthp);
 ````
 
-# Compression
+## Progress Callback
 
-* Test CMAKE for bzip2
-* disable bzip2 tests if bzip2 not enabled
-* add lzma support
+Register callback; will be called from `zip_close()` after each file has been processed.
+
+````c
+typedef void (*zip_progress_callback_t)(double);
+void zip_register_progress_callback(zip_t *, zip_progress_callback_t);
+````
 
 # API Issues
 
@@ -25,16 +36,10 @@ const zip_uint8_t *zip_get_archive_prefix(struct zip *za, zip_uint64_t *lengthp)
 
 # Features
 
-* Winzip AES support
-  * test cases decryption: <=20, >20, stat for both
-  * test cases encryption: no password, default password, file-specific password, 128/192/256, <=20, >20
-  * support testing on Linux
-  * support testing on macOS
-* consistently use `_zip_crypto_clear()` for passwords
-* support setting extra fields from `zip_source`
+* support setting extra fields from zip_source
   * introduce layers of extra fields:
     * original
-    * from `zip_source`
+    * from zip_source
     * manually set
   * when querying extra fields, search all of them in reverse order
   * add whiteout (deleted) flag
@@ -46,9 +51,7 @@ const zip_uint8_t *zip_get_archive_prefix(struct zip *za, zip_uint64_t *lengthp)
 * set `O_CLOEXEC` flag after fopen and mkstemp
 * add append-only mode writing file to disk incrementally to keep memory usage low
 * `zip_file_set_mtime()`: support InfoZIP time stamps
-* `zipcmp`: support comparing more features:
-  * version needed/made by
-  * general purpose bit flags
+
 * support streaming output (creating new archive to e.g. stdout)
 * add functions to:
   * read/set ASCII file flag? (more general options?)
@@ -84,6 +87,7 @@ const zip_uint8_t *zip_get_archive_prefix(struct zip *za, zip_uint64_t *lengthp)
 * use bool
 * use `ZIP_SOURCE_SUPPORTS_{READABLE,SEEKABLE,WRITABLE}`
 * use `zip_source_seek_compute_offset()`
+* move compat refs from `zipint.h` to own file, and include that in `zipint.h` and `src`
 * get rid of `zip_get_{compression,encryption}_implementation()`
 * use `zip_*int*_t` internally
 
@@ -155,6 +159,8 @@ const zip_uint8_t *zip_get_archive_prefix(struct zip *za, zip_uint64_t *lengthp)
 
 * `zip_source_file()`: don't allow write if start/len specify a part of the file
 * script to check if all exported symbols are marked with `ZIP_EXTERN`, add to make distcheck
+
+* re-implement fix for OS X sandboxing (`zip_archive_set_tempdir()`).
 
 * document: `zip_source_write()`: length can't be > `ZIP_INT64_MAX`
 * document: `ZIP_SOURCE_CLOSE` implementation can't return error

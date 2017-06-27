@@ -48,8 +48,8 @@
 #include "getopt.h"
 #endif
 
-#include "compat.h"
 #include "zip.h"
+#include "compat.h"
 
 char *prg;
 

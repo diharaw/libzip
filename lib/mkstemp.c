@@ -39,10 +39,7 @@
 #include <errno.h>
 #include <fcntl.h>
 #ifdef _WIN32
-#include <process.h>
 #include <io.h>
-#else
-#include <unistd.h>
 #endif
 #include <stdio.h>
 #include <stdlib.h>

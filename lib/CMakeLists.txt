@@ -53,12 +53,9 @@ MACRO(CREATE_LIBTOOL_FILE _target _install_DIR)
 ENDMACRO(CREATE_LIBTOOL_FILE)
  
 SET(LIBZIP_SOURCES
-  gladman-fcrypt.c
   zip_add.c
   zip_add_dir.c
   zip_add_entry.c
-  zip_algorithm_bzip2.c
-  zip_algorithm_deflate.c
   zip_buffer.c
   zip_close.c
   zip_delete.c
@@ -86,7 +83,6 @@ SET(LIBZIP_SOURCES
   zip_file_rename.c
   zip_file_replace.c
   zip_file_set_comment.c
-  zip_file_set_encryption.c
   zip_file_set_external_attributes.c
   zip_file_set_mtime.c
   zip_file_strerror.c
@@ -96,10 +92,9 @@ SET(LIBZIP_SOURCES
   zip_fopen_index.c
   zip_fopen_index_encrypted.c
   zip_fread.c
-  zip_fseek.c
-  zip_ftell.c
   zip_get_archive_comment.c
   zip_get_archive_flag.c
+  zip_get_compression_implementation.c
   zip_get_encryption_implementation.c
   zip_get_file_comment.c
   zip_get_name.c
@@ -111,7 +106,6 @@ SET(LIBZIP_SOURCES
   zip_name_locate.c
   zip_new.c
   zip_open.c
-  zip_progress.c
   zip_rename.c
   zip_replace.c
   zip_set_archive_comment.c
@@ -125,13 +119,12 @@ SET(LIBZIP_SOURCES
   zip_source_call.c
   zip_source_close.c
   zip_source_commit_write.c
-  zip_source_compress.c
   zip_source_crc.c
+  zip_source_deflate.c
   zip_source_error.c
   zip_source_filep.c
   zip_source_free.c
   zip_source_function.c
-  zip_source_get_compression_flags.c
   zip_source_is_deleted.c
   zip_source_layered.c
   zip_source_open.c
@@ -146,8 +139,6 @@ SET(LIBZIP_SOURCES
   zip_source_tell.c
   zip_source_tell_write.c
   zip_source_window.c
-  zip_source_winzip_aes_decode.c
-  zip_source_winzip_aes_encode.c
   zip_source_write.c
   zip_source_zip.c
   zip_source_zip_new.c
@@ -165,7 +156,6 @@ SET(LIBZIP_SOURCES
 
 IF(WIN32)
   SET(LIBZIP_OPSYS_FILES
-    zip_random_win32.c
     zip_source_win32a.c
     zip_source_win32handle.c
     zip_source_win32utf8.c
@@ -173,13 +163,11 @@ IF(WIN32)
   )
 ELSE(WIN32)
   SET(LIBZIP_OPSYS_FILES
-    zip_random_unix.c
     zip_source_file.c
   )
 ENDIF(WIN32)
 
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}
-  ${CMAKE_CURRENT_SOURCE_DIR}/gladman-fcrypt
   ${CMAKE_CURRENT_BINARY_DIR}/..)
 
 # TODO: distribute instead?
@@ -195,19 +183,12 @@ IF(NOT HAVE_MKSTEMP)
   SET(LIBZIP_EXTRA_FILES mkstemp.c)
 ENDIF(NOT HAVE_MKSTEMP)
 
-ADD_LIBRARY(zip SHARED ${LIBZIP_SOURCES} ${LIBZIP_EXTRA_FILES} ${LIBZIP_OPSYS_FILES})
-SET_TARGET_PROPERTIES(zip PROPERTIES VERSION 3.0 SOVERSION 3 )
-TARGET_LINK_LIBRARIES(zip ${ZLIB_LIBRARY} ${OPTIONAL_LIBRARY})
-INSTALL(TARGETS zip
+add_subdirectory("zlib-1.2.8")
+
+ADD_LIBRARY(zipstatic STATIC ${LIBZIP_SOURCES} ${LIBZIP_EXTRA_FILES} ${LIBZIP_OPSYS_FILES})
+SET_TARGET_PROPERTIES(zipstatic PROPERTIES VERSION 3.0 SOVERSION 3 FOLDER "Third Party")
+TARGET_LINK_LIBRARIES(zipstatic zlibstatic)
+INSTALL(TARGETS zipstatic
   RUNTIME DESTINATION bin
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib)
-#CREATE_LIBTOOL_FILE(zip lib)
-
-#ADD_LIBRARY(zipstatic STATIC ${LIBZIP_SOURCES} ${LIBZIP_EXTRA_FILES} ${LIBZIP_OPSYS_FILES})
-#SET_TARGET_PROPERTIES(zipstatic PROPERTIES VERSION 3.0 SOVERSION 3 )
-#TARGET_LINK_LIBRARIES(zipstatic ${ZLIB_LIBRARY})
-#INSTALL(TARGETS zipstatic
-#  RUNTIME DESTINATION bin
-#  ARCHIVE DESTINATION lib
-#  LIBRARY DESTINATION lib)
